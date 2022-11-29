@@ -2,6 +2,7 @@ package cn.iichen.aidlserver;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Binder;
 import android.os.IBinder;
 import android.os.MemoryFile;
 import android.os.Parcel;
@@ -17,7 +18,7 @@ public class RemoteServiceImpl extends Service {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return iRemoteService;
+        return new MyBinder();
     }
 
     IRemoteService.Stub iRemoteService = new IRemoteService.Stub() {
@@ -25,7 +26,19 @@ public class RemoteServiceImpl extends Service {
         public int plus(int a, int b) throws RemoteException {
             return a + b;
         }
+    };
 
+    // 或者定义类的形式
+    public static class RemoteServiceBinder extends IRemoteService.Stub {
+        @Override
+        public int plus(int a, int b) throws RemoteException {
+            return a + b;
+        }
+    }
+
+
+
+    class MyBinder extends Binder {
         @Override
         public boolean onTransact(int code, Parcel data, Parcel reply, int flags) throws RemoteException {
             if (code == 1) {
@@ -49,19 +62,7 @@ public class RemoteServiceImpl extends Service {
             }
             return super.onTransact(code, data, reply, flags);
         }
-    };
-
-    // 或者定义类的形式
-    public static class RemoteServiceBinder extends IRemoteService.Stub {
-        @Override
-        public int plus(int a, int b) throws RemoteException {
-            return a + b;
-        }
     }
-
-
-
-
 
 
 
